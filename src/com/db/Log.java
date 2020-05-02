@@ -12,10 +12,10 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
-public class SurveyResult {//설문1 결과 쓰기
-	private static SurveyResult vision = new SurveyResult();
+public class Log {//설문1 결과 쓰기
+	private static Log vision = new Log();
 
-	public static SurveyResult getWrite() {
+	public static Log getWrite() {
 		return vision;
 	}
 	private String returns;
@@ -26,7 +26,7 @@ public class SurveyResult {//설문1 결과 쓰기
 	   String dbId = "sunbee"; 
 	   String dbPw = "1234";  
 
-	public String write(String userid, String save, String count) {
+	public String write(String userid, String typesum, String count) {
 	    try {
 	    	Class.forName("oracle.jdbc.driver.OracleDriver");
 			conn = DriverManager.getConnection(jdbcUrl, dbId, dbPw);
@@ -34,25 +34,25 @@ public class SurveyResult {//설문1 결과 쓰기
 			System.out.println("연결 성공");
 	         
 		Statement stmt = conn.createStatement();
-		String seq = "select *from survey1result where questionsnum = " + count + "and userid = "+"'"+userid+"'";
+		String seq = "select *from log where userid = '"+userid+"' and studynum = "+count+" and rownum = 1 order by click desc";
 		ResultSet rs = stmt.executeQuery(seq);
 		rs = pstmt.executeQuery(seq);
-		//질문 넘버가 존재하면 기존의 넘버를 삭제하고 수행
+		
 		String check = null;
 		String user = null;
+		int toint = 0;
 		while(rs.next()) {
-			check = rs.getString("questionsnum");
-			user = rs.getString("userid");
-			System.out.println("조회 성공 : " + check);
+			check = rs.getString("click");
+			toint = Integer.parseInt(check);
 		}				
 			
-		if(check != null&& user!= null) {
-			System.out.println("업데이트 성공");
-			seq = "update survey1result set survey1num = '"+ save +"' where userid = '"+ userid +"' and questionsnum = '"+ count+"'";
+		if(check != null) {
+			
+			seq = "insert into log(userid, typesum, studynum, click, logdate) values('"+userid+"', '"+typesum+"', "+count+", "+(toint+1)+", to_char(sysdate, 'yyyy.mm.dd hh24:mi'))";
 			rs = pstmt.executeQuery(seq);
 		}else {
 			System.out.println("삽입 성공");
-			seq = "insert into survey1result(userid, questionsnum, survey1num) values('"+userid+"', '"+count+"', '"+save+"')";
+			seq = "insert into log(userid, typesum, studynum, click, logdate) values('"+userid+"', '"+typesum+"', "+count+", "+1+", to_char(sysdate, 'yyyy.mm.dd hh24:mi'))";
 			rs = pstmt.executeQuery(seq);
 		}
 		

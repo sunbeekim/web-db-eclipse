@@ -7,10 +7,10 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
-public class Survey1Get{ //설문 1 테이블 조회
-   private static Survey1Get survey_print = new Survey1Get();
+public class SurveyCheck{ //설문 1 테이블 조회
+   private static SurveyCheck survey_print = new SurveyCheck();
 
-   public static Survey1Get survey_print() {
+   public static SurveyCheck survey_print() {
       return survey_print;
    }
 
@@ -30,12 +30,12 @@ public class Survey1Get{ //설문 1 테이블 조회
 		conn = DriverManager.getConnection(jdbcUrl, dbId, dbPw);
 		pstmt = conn.createStatement();
 		System.out.println("연결 성공");
-         String query = "SELECT questionsnum, survey1num FROM survey1result where userid = '" + userid+"' order by questionsnum asc";
+         String query = "select *from surveycheck where userid = '"+userid+"' and rownum = 1 order by checkposition desc";
          
          rs = pstmt.executeQuery(query);
          
          while(rs.next()) {
-            returns +=rs.getString("questionsnum")+"\t"+rs.getString("survey1num")+"\t";
+            returns +=rs.getString("checkposition")+"--"+rs.getString("checkdate")+"\t";
          } // end while
          System.out.print("=========================== : ");
       } catch (Exception e) {

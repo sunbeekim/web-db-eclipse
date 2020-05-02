@@ -12,10 +12,10 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
-public class SurveyResult {//설문1 결과 쓰기
-	private static SurveyResult vision = new SurveyResult();
+public class TypeResult {//설문1 결과 쓰기
+	private static TypeResult vision = new TypeResult();
 
-	public static SurveyResult getWrite() {
+	public static TypeResult getWrite() {
 		return vision;
 	}
 	private String returns;
@@ -26,7 +26,8 @@ public class SurveyResult {//설문1 결과 쓰기
 	   String dbId = "sunbee"; 
 	   String dbPw = "1234";  
 
-	public String write(String userid, String save, String count) {
+	public String write(String userid, String typesum) {
+		String[] type;
 	    try {
 	    	Class.forName("oracle.jdbc.driver.OracleDriver");
 			conn = DriverManager.getConnection(jdbcUrl, dbId, dbPw);
@@ -34,26 +35,37 @@ public class SurveyResult {//설문1 결과 쓰기
 			System.out.println("연결 성공");
 	         
 		Statement stmt = conn.createStatement();
-		String seq = "select *from survey1result where questionsnum = " + count + "and userid = "+"'"+userid+"'";
+		String seq = "select *from surveycheck where userid = "+"'"+userid+"'";
 		ResultSet rs = stmt.executeQuery(seq);
+		
 		rs = pstmt.executeQuery(seq);
-		//질문 넘버가 존재하면 기존의 넘버를 삭제하고 수행
-		String check = null;
+		type = typesum.split("-");
+		typesum = typesum.replace("-", "");
+		typesum = typesum.replace("\t", "");
+		System.out.print(type[0]);
+		System.out.print(type[1]);
+		System.out.print(type[2]);
+		
 		String user = null;
+		String check = null;
+		String date = null;
+		int toint = 0;
 		while(rs.next()) {
-			check = rs.getString("questionsnum");
+			
 			user = rs.getString("userid");
-			System.out.println("조회 성공 : " + check);
+			check = rs.getString("checkposition");
+			date = rs.getString("checkdate");
+			toint = Integer.parseInt(check);
 		}				
 			
-		if(check != null&& user!= null) {
-			System.out.println("업데이트 성공");
-			seq = "update survey1result set survey1num = '"+ save +"' where userid = '"+ userid +"' and questionsnum = '"+ count+"'";
-			rs = pstmt.executeQuery(seq);
-		}else {
-			System.out.println("삽입 성공");
-			seq = "insert into survey1result(userid, questionsnum, survey1num) values('"+userid+"', '"+count+"', '"+save+"')";
-			rs = pstmt.executeQuery(seq);
+		if(user!= null && toint != 0) {			
+			rs = pstmt.executeQuery("insert into surveycheck(userid, checkposition, checkdate) values('"+userid+"',"+(toint+1)+", to_char(sysdate, 'yyyy.mm.dd.hh24:mm'))");
+			rs = pstmt.executeQuery("insert into typeresult(userid, type1, type2, type3, typesum, checkposition) values('"+userid+"', '"+type[0]+"', '"+type[1]+"', '"+type[2]+"', '"+typesum+"', "+ (toint+1) +")");
+			
+		}else{
+			rs = pstmt.executeQuery("insert into surveycheck(userid, checkposition, checkdate) values('"+userid+"',"+1+", to_char(sysdate, 'yyyy.mm.dd.hh24:mm'))");
+			rs = pstmt.executeQuery("insert into typeresult(userid, type1, type2, type3, typesum, checkposition) values('"+userid+"', '"+type[0]+"', '"+type[1]+"', '"+type[2]+"', '"+typesum+"', "+ 1 +")");
+			
 		}
 		
 		System.out.print("=========================== : ");

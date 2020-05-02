@@ -7,10 +7,10 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
-public class Survey1Get{ //설문 1 테이블 조회
-   private static Survey1Get survey_print = new Survey1Get();
+public class Type_Sum{ //설문 1 테이블 조회
+   private static Type_Sum survey_print = new Type_Sum();
 
-   public static Survey1Get survey_print() {
+   public static Type_Sum survey_print() {
       return survey_print;
    }
 
@@ -21,7 +21,7 @@ public class Survey1Get{ //설문 1 테이블 조회
    String jdbcUrl = "jdbc:oracle:thin:@localhost:1521:xe"; 
    String dbId = "sunbee"; 
    String dbPw = "1234";  
-   public String select(String userid) {
+   public String select(String typesum) {
       try {
     	   	
         returns ="";
@@ -29,15 +29,22 @@ public class Survey1Get{ //설문 1 테이블 조회
         Class.forName("oracle.jdbc.driver.OracleDriver");
 		conn = DriverManager.getConnection(jdbcUrl, dbId, dbPw);
 		pstmt = conn.createStatement();
-		System.out.println("연결 성공");
-         String query = "SELECT questionsnum, survey1num FROM survey1result where userid = '" + userid+"' order by questionsnum asc";
+		
+		//typesum = typesum.replaceAll(" ", "");
          
-         rs = pstmt.executeQuery(query);
-         
-         while(rs.next()) {
-            returns +=rs.getString("questionsnum")+"\t"+rs.getString("survey1num")+"\t";
-         } // end while
+         //https://wanna-b.tistory.com/104
+		//db에 디폴트값 넣어줘도 될듯?
+         rs = pstmt.executeQuery("select max(typesumcount) typesumcount from type_sumnum where typesum = '"+typesum+"'");
+         int into;
          System.out.print("=========================== : ");
+         while(rs.next()) {
+            returns = rs.getString("typesumcount");
+            if(returns != null)into = Integer.parseInt(returns);
+            
+           
+         } 
+         
+         
       } catch (Exception e) {
          e.printStackTrace();
       } // end try~catch

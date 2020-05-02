@@ -7,10 +7,10 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
-public class Survey1Get{ //설문 1 테이블 조회
-   private static Survey1Get survey_print = new Survey1Get();
+public class Type_Questions{ //설문 1 테이블 조회
+   private static Type_Questions survey_print = new Type_Questions();
 
-   public static Survey1Get survey_print() {
+   public static Type_Questions survey_print() {
       return survey_print;
    }
 
@@ -21,7 +21,7 @@ public class Survey1Get{ //설문 1 테이블 조회
    String jdbcUrl = "jdbc:oracle:thin:@localhost:1521:xe"; 
    String dbId = "sunbee"; 
    String dbPw = "1234";  
-   public String select(String userid) {
+   public String select(String typesum, String count) {
       try {
     	   	
         returns ="";
@@ -29,15 +29,16 @@ public class Survey1Get{ //설문 1 테이블 조회
         Class.forName("oracle.jdbc.driver.OracleDriver");
 		conn = DriverManager.getConnection(jdbcUrl, dbId, dbPw);
 		pstmt = conn.createStatement();
-		System.out.println("연결 성공");
-         String query = "SELECT questionsnum, survey1num FROM survey1result where userid = '" + userid+"' order by questionsnum asc";
+		
+         String query = "SELECT max(num1) num1 FROM type_questions2  where typesum = '"+typesum+"' and studynum = '"+count+"'";
          
          rs = pstmt.executeQuery(query);
-         
-         while(rs.next()) {
-            returns +=rs.getString("questionsnum")+"\t"+rs.getString("survey1num")+"\t";
-         } // end while
          System.out.print("=========================== : ");
+         while(rs.next()) {
+            returns = rs.getString("num1");
+            System.out.println(returns);
+         } // end while
+        
       } catch (Exception e) {
          e.printStackTrace();
       } // end try~catch

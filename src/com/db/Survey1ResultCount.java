@@ -7,10 +7,10 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
-public class Survey1Get{ //설문 1 테이블 조회
-   private static Survey1Get survey_print = new Survey1Get();
+public class Survey1ResultCount{ //설문 1 테이블 조회
+   private static Survey1ResultCount survey_print = new Survey1ResultCount();
 
-   public static Survey1Get survey_print() {
+   public static Survey1ResultCount survey_print() {
       return survey_print;
    }
 
@@ -20,7 +20,8 @@ public class Survey1Get{ //설문 1 테이블 조회
    private ResultSet rs = null;
    String jdbcUrl = "jdbc:oracle:thin:@localhost:1521:xe"; 
    String dbId = "sunbee"; 
-   String dbPw = "1234";  
+   String dbPw = "1234";
+ 
    public String select(String userid) {
       try {
     	   	
@@ -29,15 +30,20 @@ public class Survey1Get{ //설문 1 테이블 조회
         Class.forName("oracle.jdbc.driver.OracleDriver");
 		conn = DriverManager.getConnection(jdbcUrl, dbId, dbPw);
 		pstmt = conn.createStatement();
+		
 		System.out.println("연결 성공");
-         String query = "SELECT questionsnum, survey1num FROM survey1result where userid = '" + userid+"' order by questionsnum asc";
+         String query = "SELECT * from survey1result where userid = '"+ userid+"'";
          
          rs = pstmt.executeQuery(query);
-         
+       
          while(rs.next()) {
-            returns +=rs.getString("questionsnum")+"\t"+rs.getString("survey1num")+"\t";
-         } // end while
+        	 returns += rs.getString("userid")+"\t";  
+        	 System.out.println(returns);	
+         }
          System.out.print("=========================== : ");
+         	
+         
+        
       } catch (Exception e) {
          e.printStackTrace();
       } // end try~catch

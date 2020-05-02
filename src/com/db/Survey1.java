@@ -18,7 +18,7 @@ public class Survey1{ //설문 1 테이블 조회
    private Connection conn = null;
    private Statement pstmt = null;
    private ResultSet rs = null;
-   String jdbcUrl = "jdbc:oracle:thin:@123.100.189.65:1521:xe"; 
+   String jdbcUrl = "jdbc:oracle:thin:@localhost:1521:xe"; 
    String dbId = "sunbee"; 
    String dbPw = "1234";  
    public String select() {
@@ -37,6 +37,7 @@ public class Survey1{ //설문 1 테이블 조회
          while(rs.next()) {
             returns +=rs.getString("QUESTIONS")+"\t"+rs.getString("QUESTIONSNUM")+"\t";
          } // end while
+         System.out.print("=========================== : ");
       } catch (Exception e) {
          e.printStackTrace();
       } // end try~catch
